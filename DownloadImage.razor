@@ -1,0 +1,42 @@
+﻿@page "/DownloadImg"
+@using System.Drawing;
+@inject HttpClient httpClient;
+@inject NavigationManager nav;
+<img src="@imageurl" alt="Image" />
+
+<button @onclick="DowonloadImageFunction">Dowonload Image</button>
+
+
+@code {
+    private string? imageurl;
+    private Stream ms;
+    protected override async void OnInitialized()
+    {
+
+        imageurl = await localstorage.GetItemAsync<string>("Imagebytes");
+
+        ms = await localstorage.GetItemAsync<Stream>("ms");
+
+        await js.InvokeVoidAsync("alert", imageurl);
+        StateHasChanged();
+    }
+
+    public async void DowonloadImageFunction()
+    {
+        //Image.FromStream(ms);
+        //using (var fileStream = new System.IO.FileStream("bill.jpg", System.IO.FileMode.Create))
+        //{
+        //    var response = await httpClient.GetAsync(imageurl);
+        //    using (var imageStream = await response.Content.ReadAsStreamAsync())
+        //    {
+        //        await imageStream.CopyToAsync(fileStream);
+        //    }
+        //}
+        var downloadImageFunction = $"downloadImage('{imageurl}')";
+
+        await js.InvokeVoidAsync("downloadImage", imageurl);
+
+
+    }
+
+}

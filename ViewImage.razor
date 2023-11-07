@@ -1,0 +1,39 @@
+﻿@page "/viewimg"
+
+<InputFile OnChange="HandelFileChange" />
+<button @onclick="SaveImage">Save image</button>
+
+
+@code
+{
+    private string? ImageUri;
+    Stream ms1;
+    private async Task HandelFileChange(InputFileChangeEventArgs e)
+    {
+        var image = await e.File.RequestImageFileAsync("image/png", 600, 600);
+
+        using Stream imageStream = image.OpenReadStream(1024 * 1024 * 10);
+
+        using MemoryStream ms = new();
+        //copy imageStream to Memory stream
+        await imageStream.CopyToAsync(ms);
+        ms1 = imageStream;
+
+        //convert stream to base64
+        ImageUri = $"data:image/jpg;base64,{Convert.ToBase64String(ms.ToArray())}";
+        StateHasChanged();
+
+    }
+
+
+
+    private async void SaveImage()
+    {
+
+
+        await localstorage.SetItemAsync("Imagebytes", ImageUri);
+        // await localstorage.SetItemAsync("ms", ms1);
+        nav.NavigateTo("/DownloadImg");
+
+    }
+}
